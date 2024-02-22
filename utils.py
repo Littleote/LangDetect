@@ -8,6 +8,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.preprocessing import normalize
 
+try:
+    from adjustText import adjust_text
+
+    ADD_TEXT = True
+except ModuleNotFoundError:
+    ADD_TEXT = False
+
 
 def compute_features(
     X_train, X_test, analyzer="char", max_features=None, ngram_range=None
@@ -54,12 +61,13 @@ def compute_coverage(features, split, analyzer="char"):
     """
     total = 0.0
     found = 0.0
+    f_set = set(features)
     for sent in split:
         # The following may be affected by your preprocess function. Modify accordingly
         sent = sent.split(" ") if analyzer == "word" else list(sent)
         total += len(sent)
         for token in sent:
-            if token in features:
+            if token in f_set:
                 found += 1.0
     return found / total
 
@@ -162,9 +170,22 @@ def plotPCA(x_train, x_test, y_test, langs):
     pca_test = pca.transform(toNumpyArray(x_test))
     print("Variance explained by PCA:", pca.explained_variance_ratio_)
     y_test_list = np.asarray(y_test.tolist())
+    labels = []
     for lang in langs:
         pca_x = np.asarray([i[0] for i in pca_test])[y_test_list == lang]
         pca_y = np.asarray([i[1] for i in pca_test])[y_test_list == lang]
         plt.scatter(pca_x, pca_y, label=lang)
-    plt.legend(loc="upper left")
+        labels.append(
+            dict(x=np.median(pca_x), y=np.median(pca_y), s=f"${lang}$", color="black")
+        )
+    legend = plt.legend(loc="upper right")
+    if ADD_TEXT:
+        texts = [plt.text(**label) for label in labels]
+        adjust_text(
+            texts,
+            objects=[legend],
+            force_static=(0.02, 0.05),
+            time_lim=1,
+            arrowprops=dict(arrowstyle="->", color="black"),
+        )
     plt.show()

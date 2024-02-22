@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 import utils
-from classifiers import applyNaiveBayes
+from classifiers import applyClassifier, CLASSIFIERS
 from preprocess import preprocess
 
 seed = 42
@@ -18,12 +18,14 @@ def get_parser():
         "-i",
         "--input",
         help="Input data in csv format",
+        metavar="FILE",
         type=str,
     )
     parser.add_argument(
         "-v",
         "--voc_size",
         help="Vocabulary size",
+        metavar="SIZE",
         type=int,
     )
     parser.add_argument(
@@ -37,8 +39,16 @@ def get_parser():
         "-n",
         "--ngram_range",
         help="N-gram size range of the tokens",
+        metavar=("FROM", "TO"),
         type=int,
         nargs=2,
+    )
+    parser.add_argument(
+        "-c",
+        "--classifier",
+        help="Classifier to predict languages",
+        type=str.upper,
+        choices=list(CLASSIFIERS.keys()),
     )
     return parser
 
@@ -95,7 +105,7 @@ if __name__ == "__main__":
 
     # Apply Classifier
     X_train, X_test = utils.normalizeData(X_train_raw, X_test_raw)
-    y_predict = applyNaiveBayes(X_train, y_train, X_test)
+    y_predict = applyClassifier(args.classifier, X_train, y_train, X_test)
 
     print("========")
     print("Prediction Results:")
