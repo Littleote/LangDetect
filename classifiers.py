@@ -5,7 +5,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from utils import toNumpyArray
 
 
-def applyNaiveBayes(X_train, y_train, X_test):
+def applyNaiveBayes(X_train, y_train, X_test, **kwargs):
     """
     Task: Given some features train a Naive Bayes classifier
           and return its predictions over a test set
@@ -17,13 +17,13 @@ def applyNaiveBayes(X_train, y_train, X_test):
     trainArray = toNumpyArray(X_train)
     testArray = toNumpyArray(X_test)
 
-    clf = MultinomialNB()
+    clf = MultinomialNB(**kwargs)
     clf.fit(trainArray, y_train)
     y_predict = clf.predict(testArray)
     return y_predict
 
 
-def applySupportVectorMachine(X_train, y_train, X_test):
+def applySupportVectorMachine(X_train, y_train, X_test, **kwargs):
     """
     Task: Given some features train an SVM classifier
           and return its predictions over a test set
@@ -35,13 +35,13 @@ def applySupportVectorMachine(X_train, y_train, X_test):
     trainArray = toNumpyArray(X_train)
     testArray = toNumpyArray(X_test)
 
-    clf = SVC()
+    clf = SVC(**kwargs)
     clf.fit(trainArray, y_train)
     y_predict = clf.predict(testArray)
     return y_predict
 
 
-def applyKNearestNeighbours(X_train, y_train, X_test):
+def applyKNearestNeighbours(X_train, y_train, X_test, **kwargs):
     """
     Task: Given some features train a nearest neighbours classifier
           and return its predictions over a test set
@@ -53,7 +53,7 @@ def applyKNearestNeighbours(X_train, y_train, X_test):
     trainArray = toNumpyArray(X_train)
     testArray = toNumpyArray(X_test)
 
-    clf = KNeighborsClassifier()
+    clf = KNeighborsClassifier(**kwargs)
     clf.fit(trainArray, y_train)
     y_predict = clf.predict(testArray)
     return y_predict
@@ -69,7 +69,8 @@ def applyClassifier(classifier, X_train, y_train, X_test, **kwargs):
            X_test -> Test features
     Output: y_predict -> Predictions over the test set
     """
-    return CLASSIFIERS[classifier](X_train, y_train, X_test, **kwargs)
+    fun = CLASSIFIERS.get(classifier, applyNaiveBayes)
+    return fun(X_train, y_train, X_test, **kwargs)
 
 
 CLASSIFIERS = dict(

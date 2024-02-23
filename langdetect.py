@@ -1,5 +1,6 @@
 import argparse
 import random
+import ast
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -50,12 +51,26 @@ def get_parser():
         type=str.upper,
         choices=list(CLASSIFIERS.keys()),
     )
+
+    def named_parameter(arg: str) -> dict:
+        name, value_expr = arg.split(sep="=", maxsplit=1)
+        value = ast.literal_eval(value_expr)
+        return {name: value}
+
+    parser.add_argument(
+        "--args",
+        help="Classifier arguments",
+        type=named_parameter,
+        nargs="*",
+        default=dict(),
+    )
     return parser
 
 
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
+    kwargs = {k: v for arg in args.args for k, v in arg.items()}
     raw = pd.read_csv(args.input)
 
     # Languages
@@ -97,7 +112,7 @@ if __name__ == "__main__":
         "Coverage: ",
         utils.compute_coverage(
             features,
-            X_test.values,
+            X_test,
             analyzer=args.analyzer,
         ),
     )
@@ -105,7 +120,7 @@ if __name__ == "__main__":
 
     # Apply Classifier
     X_train, X_test = utils.normalizeData(X_train_raw, X_test_raw)
-    y_predict = applyClassifier(args.classifier, X_train, y_train, X_test)
+    y_predict = applyClassifier(args.classifier, X_train, y_train, X_test, **kwargs)
 
     print("========")
     print("Prediction Results:")

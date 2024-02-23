@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 
 def compute_features(
-    X_train, X_test, analyzer="char", max_features=None, ngram_range=None
+    X_train, X_test, analyzer=None, max_features=None, ngram_range=None
 ):
     """
     Task: Compute a matrix of token counts given a corpus.
@@ -35,6 +35,7 @@ def compute_features(
             X_unigram_test_raw: Features computed for the Test sentences
     """
 
+    analyzer = "char" if analyzer is None else analyzer
     ngram_range = (1, 1) if ngram_range is None else tuple(ngram_range)
 
     unigramVectorizer = CountVectorizer(
@@ -184,6 +185,7 @@ def plotPCA(x_train, x_test, y_test, langs):
         adjust_text(
             texts,
             objects=[legend],
+            force_text=(0.5, 1),
             force_static=(0.02, 0.05),
             time_lim=1,
             arrowprops=dict(arrowstyle="->", color="black"),
