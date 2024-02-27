@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 
 import utils
 from classifiers import applyClassifier, CLASSIFIERS
-from preprocess import preprocess
+from preprocess import preprocess, PREPROCESSORS
 
 seed = 42
 random.seed(seed)
@@ -48,6 +48,13 @@ def get_parser():
         metavar=("FROM", "TO"),
         type=int,
         nargs=2,
+    )
+    parser.add_argument(
+        "-p",
+        "--preprocess",
+        help="Preprocessing procedure to apply to the corpus",
+        type=str.upper,
+        choices=list(PREPROCESSORS.keys()),
     )
     parser.add_argument(
         "-c",
@@ -99,8 +106,8 @@ if __name__ == "__main__":
 
     # Preprocess text (Word granularity only)
     if args.analyzer == "word":
-        X_train, y_train = preprocess(X_train, y_train)
-        X_test, y_test = preprocess(X_test, y_test)
+        X_train, y_train = preprocess(X_train, y_train, use=args.preprocess)
+        X_test, y_test = preprocess(X_test, y_test, use=args.preprocess)
 
     # Compute text features
 

@@ -28,7 +28,9 @@ def compute_features(
            X_test -> Test sentences
            analyzer -> Granularity used to process the sentence
                       Values: {word, char}
-           tokenizer -> Callable function to apply to the sentences before compute.
+           max_features -> Maximum number of tokens
+           ngram_range -> Inclusive range of n-grams to tokenize
+           languages -> Extract the vocabulary for each language independently
 
     Output: unigramFeatures: Cout matrix
             X_unigram_train_raw: Features computed for the Train sentences
