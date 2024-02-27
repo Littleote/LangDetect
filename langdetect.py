@@ -30,6 +30,11 @@ def get_parser():
         type=int,
     )
     parser.add_argument(
+        "--by_lang",
+        help="Get vocabulary by language",
+        action="store_true",
+    )
+    parser.add_argument(
         "-a",
         "--analyzer",
         help="Tokenization level: {word, char}",
@@ -98,12 +103,14 @@ if __name__ == "__main__":
         X_test, y_test = preprocess(X_test, y_test)
 
     # Compute text features
+
     features, X_train_raw, X_test_raw = utils.compute_features(
         X_train,
         X_test,
         analyzer=args.analyzer,
         max_features=args.voc_size,
         ngram_range=args.ngram_range,
+        languages=y_train if args.by_lang else None,
     )
 
     print("========")

@@ -17,7 +17,7 @@ except ModuleNotFoundError:
 
 
 def compute_features(
-    X_train, X_test, analyzer=None, max_features=None, ngram_range=None
+    X_train, X_test, analyzer=None, max_features=None, ngram_range=None, languages=None
 ):
     """
     Task: Compute a matrix of token counts given a corpus.
@@ -38,11 +38,25 @@ def compute_features(
     analyzer = "char" if analyzer is None else analyzer
     ngram_range = (1, 1) if ngram_range is None else tuple(ngram_range)
 
-    unigramVectorizer = CountVectorizer(
-        analyzer=analyzer, max_features=max_features, ngram_range=ngram_range
+    params = dict(
+        analyzer=analyzer,
+        max_features=max_features,
+        ngram_range=ngram_range,
     )
+    unigramVectorizer = CountVectorizer(**params)
 
-    X_unigram_train_raw = unigramVectorizer.fit_transform(X_train)
+    if languages is None:
+        unigramVectorizer.fit(X_train)
+    else:
+        langs = np.unique(languages)
+        vocab = set()
+        for lang in langs:
+            unigramVectorizer.fit(X_train[languages == lang])
+            vocab.update(unigramVectorizer.get_feature_names_out())
+        params["vocabulary"] = vocab
+        unigramVectorizer = CountVectorizer(**params)
+
+    X_unigram_train_raw = unigramVectorizer.transform(X_train)
     X_unigram_test_raw = unigramVectorizer.transform(X_test)
     unigramFeatures = unigramVectorizer.get_feature_names_out()
     return unigramFeatures, X_unigram_train_raw, X_unigram_test_raw
@@ -166,6 +180,7 @@ def plotPCA(x_train, x_test, y_test, langs):
             Plot PCA results by language
 
     """
+    langs = sorted(langs)
     pca = PCA(n_components=2)
     pca.fit(toNumpyArray(x_train))
     pca_test = pca.transform(toNumpyArray(x_test))
