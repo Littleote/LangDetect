@@ -73,6 +73,7 @@ def get_parser():
         "--args",
         help="Classifier arguments",
         type=named_parameter,
+        metavar="NAME=VALUE",
         nargs="*",
         default=dict(),
     )
