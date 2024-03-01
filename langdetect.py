@@ -77,6 +77,11 @@ def get_parser():
         nargs="*",
         default=dict(),
     )
+    parser.add_argument(
+        "--no_plot",
+        help="Run without drawing any plot",
+        action="store_true",
+    )
     return parser
 
 
@@ -142,10 +147,11 @@ if __name__ == "__main__":
     utils.plot_F_Scores(y_test, y_predict)
     print("========")
 
-    utils.plot_Confusion_Matrix(y_test, y_predict, "Greens")
+    if not args.no_plot:
+        utils.plot_Confusion_Matrix(y_test, y_predict, "Greens")
 
-    # Plot PCA
-    print("========")
-    print("PCA and Explained Variance:")
-    utils.plotPCA(X_train, X_test, y_test, languages)
-    print("========")
+        # Plot PCA
+        print("========")
+        print("PCA and Explained Variance:")
+        utils.plotPCA(X_train, X_test, y_test, languages)
+        print("========")

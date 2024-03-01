@@ -1,6 +1,7 @@
 import re
 
 CUT_LEN = 2
+CUT_THRESHOLD = 18
 
 
 def cut(document):
@@ -8,7 +9,7 @@ def cut(document):
         cuts = len(match.group(0)) - CUT_LEN + 1
         return " ".join([match.group(0)[i : i + CUT_LEN] for i in range(cuts)])
 
-    return re.sub(r"\b\w{9,}\b", split, document)
+    return re.sub(rf"\b\w{{{CUT_THRESHOLD},}}\b", split, document)
 
 
 def word_limit(documents, labels):
